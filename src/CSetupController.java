@@ -33,15 +33,17 @@ public class CSetupController {
     }
     
     private void selectShip(MouseEvent evt){
-        Model.setSelectedShip(((JLabel)evt.getSource()).getName());
+        Model.setSelectedShip(((JLabel)evt.getSource()).getText());
     }
     
     private void selectCell(MouseEvent event){
         int cell = Integer.parseInt(((JLabel)event.getSource()).getName());
-        if(Model.getStartCell() == -1){
+        if(Model.getStartCell() == cell){
+            Model.setStartCell(-1);
+        }else if(Model.getStartCell() == -1){
             Model.setStartCell(cell);
         }else{
-            Model.setStartCell(cell);
+            Model.setEndCell(cell);
         }
     }
 }
