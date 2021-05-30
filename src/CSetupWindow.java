@@ -1,8 +1,11 @@
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.border.Border;
@@ -18,6 +21,8 @@ public class CSetupWindow extends javax.swing.JFrame implements PropertyChangeLi
         for(int i = 0; i < 100; i++){
             JLabel label = new JLabel();
             label.setBorder(new LineBorder(Color.black));
+            label.setOpaque(true);
+            label.setBackground(Color.white);
             label.setName(String.valueOf(i));
             GridLabels[i] = label;
             pGrid.add(label);
@@ -46,8 +51,54 @@ public class CSetupWindow extends javax.swing.JFrame implements PropertyChangeLi
         }
     }
     
-    private void selectCell(int oldCell, int newCell){
+    private void selectStartCell(int oldCell, int newCell){
+        ImageIcon cross = new ImageIcon(new ImageIcon(getClass().getResource("/resources/cross.png")).getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
+        if(oldCell != -1){
+            GridLabels[oldCell].setIcon(null);
+            GridLabels[oldCell].setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
+        if(newCell != -1){
+            GridLabels[newCell].setIcon(cross);
+            GridLabels[newCell].setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
         
+    }
+    
+    private void markPossiblePlacements(int[] oldPlacements, int[] newPlacements){
+        ImageIcon point = new ImageIcon(new ImageIcon(getClass().getResource("/resources/point.png")).getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
+        for(int oldPlacement : oldPlacements){
+            if(oldPlacement != -1){
+                GridLabels[oldPlacement].setIcon(null);
+                GridLabels[oldPlacement].setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        }
+        for(int newPlacement : newPlacements){
+           if(newPlacement != -1){
+                GridLabels[newPlacement].setIcon(point);
+                GridLabels[newPlacement].setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+        }
+    }
+    
+    private void placeShips(CShip[] oldShips, CShip[] newShips){
+        for(CShip oldShip : oldShips){
+            if(oldShip != null){
+                for(int coordinate : oldShip.getCoordinates()){
+                    if(coordinate != -1){
+                        GridLabels[coordinate].setBackground(Color.black);
+                    }
+                }
+            }
+        }
+        for(CShip newShip : newShips){
+            if(newShip != null){
+                for(int coordinate : newShip.getCoordinates()){
+                    if(coordinate != -1){
+                        GridLabels[coordinate].setBackground(Color.black);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -56,7 +107,13 @@ public class CSetupWindow extends javax.swing.JFrame implements PropertyChangeLi
         Object oldValue = evt.getOldValue();
         Object newValue = evt.getNewValue();
         if(propName == "selectedShip"){
-            selectShip((String)oldValue, (String)newValue);
+            selectShip(oldValue.toString(), newValue.toString());
+        }else if(propName == "startCell"){
+            selectStartCell((Integer)oldValue, (Integer)newValue);
+        }else if(propName == "possiblePlacements"){
+            markPossiblePlacements((int[])oldValue, (int[])newValue);
+        }else if(propName == "placedShips"){
+            placeShips((CShip[])oldValue, (CShip[])newValue);
         }
     }
     /**
